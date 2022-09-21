@@ -1,13 +1,17 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import TextField from '../form/textFiled';
-function LoginForm() {
+function LoginForm({ onChangeAuth }) {
   const [data, setData] = React.useState({
-    email: '',
-    name: '',
+    username: '',
     password: '',
-    lastLoginDate: '',
   });
+  const [status, setStatus] = React.useState(false);
+  React.useEffect(() => {
+    if (status) {
+      onChangeAuth(true);
+    }
+  }, [status]);
   const [check, setCheck] = React.useState(true);
   const handleChange = (target) => {
     setData((prevState) => ({
@@ -15,30 +19,39 @@ function LoginForm() {
       [target.name]: target.value,
     }));
   };
-
+  const submitData = async () => {
+    await fetch('http://localhost:5000/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+      .then(function (response) {
+        setStatus(response.ok);
+        return response;
+      })
+      .then((response) => response.json())
+      .then((json) =>
+        json.token
+          ? localStorage.setItem('token', `${json.token}`) && console.log(json.token)
+          : console.log('uncorrect'),
+      );
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const dateNow = Date().toString().substring(4, 24);
-    handleChange({ name: 'lastLoginDate', value: dateNow });
-    // setData((prevState) => ({ ...prevState, ['lastLoginDate']: dateNow }));
-    if (data.email === '' || data.name === '' || data.password === '') {
+    if (data.username === '' || data.password === '') {
       setCheck(false);
       return;
     } else {
       setCheck(true);
-
+      submitData();
       console.log(data);
     }
   };
   return (
     <form onSubmit={handleSubmit}>
-      <TextField
-        label="Электронная почта"
-        name="email"
-        value={data.email}
-        onChange={handleChange}
-      />
-      <TextField label="Имя" name="name" value={data.name} onChange={handleChange} />
+      <TextField label="Имя" name="username" value={data.name} onChange={handleChange} />
       <TextField
         label="Пароль"
         type="password"

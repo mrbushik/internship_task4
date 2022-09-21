@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-useless-computed-key */
 import React, { useState } from 'react';
 import TextField from '../form/textFiled';
 
-const RegisterForm = ({ authStatus, onChangeAuth }) => {
+const RegisterForm = ({ onChangeAuth }) => {
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -11,8 +12,14 @@ const RegisterForm = ({ authStatus, onChangeAuth }) => {
     registrDate: '',
   });
   const [check, setCheck] = React.useState(true);
-  // let status = false;
   const [status, setStatus] = React.useState(false);
+
+  React.useEffect(() => {
+    if (status) {
+      onChangeAuth(true);
+    }
+  }, [status]);
+
   const handleChange = (target) => {
     const dateNow = Date().toString().substring(4, 24);
     setData((prevState) => ({
@@ -22,18 +29,9 @@ const RegisterForm = ({ authStatus, onChangeAuth }) => {
       ['registrDate']: dateNow,
     }));
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (data.email === '' || data.password === '' || data.username === '') {
-      setCheck(false);
-      return;
-    } else {
-      setCheck(true);
-    }
-
-    // fetch('http://localhost:5000/auth/registration', {
-    fetch('https://jsonplaceholder.typicode.com/posts', {
+  const submitData = async () => {
+    await fetch('http://localhost:5000/auth/registration', {
+      // await fetch('https://jsonplaceholder.typicode.com/posts', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -45,12 +43,22 @@ const RegisterForm = ({ authStatus, onChangeAuth }) => {
         setStatus(response.ok);
         return response;
       })
+      // не забыть поменять емаил на  токен
       .then((response) => response.json())
       .then((json) => localStorage.setItem('token', `${json.email}`));
   };
-  if (status) {
-    onChangeAuth(true);
-  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (data.email === '' || data.password === '' || data.username === '') {
+      setCheck(false);
+      return;
+    } else {
+      setCheck(true);
+      submitData();
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <TextField

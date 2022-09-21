@@ -4,10 +4,20 @@ import MainPage from './Components/page/mainPage';
 
 function App() {
   const [auth, setAuth] = React.useState(false);
+  const [test, setTest] = React.useState(false);
   const handleToggleAuth = (state) => {
     setAuth(state);
   };
-  return <>{auth ? <MainPage /> : <Login authStatus={auth} onChangeAuth={handleToggleAuth} />}</>;
+  // React.useEffect(() => {
+  //   console.log('произошел auth');
+  // }, [auth]);
+
+  return (
+    <>
+      <MainPage />
+      {/* {auth ? <MainPage /> : <Login authStatus={auth} onChangeAuth={handleToggleAuth} />} */}
+    </>
+  );
 }
 
 export default App;

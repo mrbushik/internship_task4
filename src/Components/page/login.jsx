@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import LoginForm from '../ui/loginForm';
 import RegisterForm from '../ui/registerForm';
 
-function Login({ authStatus, onChangeAuth }) {
+function Login({ ...rest }) {
   const { type } = useParams();
   const [formType, setFormType] = React.useState(type === 'register' ? type : 'login');
   const togleFormType = () => {
@@ -12,13 +12,14 @@ function Login({ authStatus, onChangeAuth }) {
   };
   return (
     <>
+      {/* <div onClick={() => onChangeAuth(true)}>change state!!!</div> */}
       <div className="container mt-5">
         <div className="row">
           <div className="col-md-6 offset-md-3 shadow p-4">
             {formType === 'register' ? (
               <>
                 <h3 className="mb-4">Register</h3>
-                <RegisterForm authStatus={authStatus} onChangeAuth={onChangeAuth} />
+                <RegisterForm {...rest} />
                 <p>Already have account?</p>{' '}
                 <a role="button" onClick={togleFormType}>
                   Sing In
@@ -27,7 +28,7 @@ function Login({ authStatus, onChangeAuth }) {
             ) : (
               <>
                 <h3 className="mb-4">Login</h3>
-                <LoginForm />
+                <LoginForm {...rest} />
                 <a role="button" onClick={togleFormType}>
                   Sing Un
                 </a>
