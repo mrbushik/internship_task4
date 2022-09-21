@@ -74,6 +74,30 @@ class authController {
       console.log(e);
     }
   }
+  async update(req, res) {
+    try {
+      // const { username } = req.body;
+      // const user = await User.findOne(() => User.username === username);
+      // if (user) {
+      //   User.email = req.body.email;
+      // }
+      // res.send();
+      const { username, email } = req.body;
+      const user = await User.findOne({ username });
+      // var artist = User.find(function (artist) {
+      //   return User._id === Number(req.params._id);
+      // });
+      // res.json(user);
+      user.email = req.body.email;
+      // res.send();
+      // return res.json({ user, message: 'Попытка обновить' });
+      await res.send(user);
+      // artist.name = req.body.name;
+      // res.send(artist);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
 
 module.exports = new authController();
