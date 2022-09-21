@@ -36,7 +36,9 @@ class authController {
         roles: [userRole.value],
       });
       await user.save();
-      return res.json({ message: 'Пользователь успешно зарегистрирован' });
+      const token = generateAccessToken(user._id, user.roles);
+      return res.json({ token, message: 'Пользователь успешно зарегистрирован' });
+      // return res.json({ message: 'Пользователь успешно зарегистрирован' });
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: 'Ошибочка error' });
@@ -45,10 +47,10 @@ class authController {
 
   async login(req, res) {
     try {
-      const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      const { username, password } = req.body;
+      const user = await User.findOne({ username });
       if (!user) {
-        return res.status(400).json({ message: `Пользователь ${email} не найден` });
+        return res.status(400).json({ message: `Пользователь ${username} не найден` });
       }
       const validPassword = bcrypt.compareSync(password, user.password);
       if (!validPassword) {
@@ -67,7 +69,7 @@ class authController {
       const users = await User.find();
       res.json(users);
 
-      // res.json('serwer is work');
+      res.json('serwer is work');
     } catch (e) {
       console.log(e);
     }
