@@ -25,8 +25,8 @@ function User({
         <th>{userObjectId}</th>
         <th>{username}</th>
         <th>{email}</th>
-        <th>{lastLoginDate}</th>
         <th>{registrDate}</th>
+        <th>{lastLoginDate}</th>
         <th>{statusUser}</th>
       </tr>
     </>

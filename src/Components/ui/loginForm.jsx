@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-useless-computed-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import TextField from '../form/textFiled';
@@ -5,26 +7,63 @@ function LoginForm({ onChangeAuth, usersList }) {
   const [data, setData] = React.useState({
     email: '',
     password: '',
+    lastLoginDate: '',
   });
-  const [status, setStatus] = React.useState(false);
-  React.useEffect(() => {
-    if (status) {
-      onChangeAuth(true);
-    }
-  }, [status]);
+  const [loginUserData, setLoginUserData] = React.useState([]);
   const [check, setCheck] = React.useState(true);
   const handleChange = (target) => {
+    const dateNow = Date().toString().substring(4, 24);
+
     setData((prevState) => ({
       ...prevState,
       [target.name]: target.value,
+      ['lastLoginDate']: dateNow,
     }));
   };
+  const getLoginObject = (id, email) => {
+    let arr = loginUserData;
+    arr.push({ id: id, email: email });
+    setLoginUserData(arr);
+  };
+  const handleSubmitNowDate = () => {
+    Object.values(usersList).map((user, index) =>
+      getLoginObject(Object.keys(usersList)[index], user.email),
+    );
+    let targetIndex = loginUserData.findIndex((item) => item.email === data.email);
+    if (targetIndex !== -1) {
+      let myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+
+      let raw = JSON.stringify({
+        lastLoginDate: data.lastLoginDate,
+      });
+
+      let requestOptions = {
+        method: 'PATCH',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow',
+      };
+
+      fetch(
+        `https://task4-2cc24-default-rtdb.europe-west1.firebasedatabase.app/users/${loginUserData[targetIndex].id}.json`,
+        requestOptions,
+      )
+        .then((response) => response.text())
+        .then((result) => onChangeAuth(true))
+        .catch((error) => console.log('error', error));
+    } else {
+      return;
+    }
+  };
+  // const auth = () => onChangeAuth(true)
   const submitData = async () => {
     let receivedUsers = Object.values(usersList).map((item) => item);
     let correctEmail = receivedUsers.find((item) => item.email === data.email);
     let correctPassword = receivedUsers.find((item) => item.password === data.password);
     if (correctEmail && correctPassword) {
-      onChangeAuth(true);
+      setCheck(true);
+      handleSubmitNowDate();
     } else {
       setCheck(false);
     }
@@ -35,7 +74,6 @@ function LoginForm({ onChangeAuth, usersList }) {
       setCheck(false);
       return;
     } else {
-      setCheck(true);
       submitData();
     }
   };
