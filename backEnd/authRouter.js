@@ -5,5 +5,6 @@ const router = new Router();
 router.post('/registration', controller.registration);
 router.post('/login', controller.login);
 router.get('/users', controller.getUsers);
-router.put('/update', controller.update);
+router.put('/update/:id', controller.update);
+router.delete('/delete/:id', controller.deleteUser);
 module.exports = router;

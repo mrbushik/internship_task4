@@ -53,7 +53,7 @@ function MainPage() {
                 <th>{user.email}</th>
                 <th>{user.lastLoginDate}</th>
                 <th>{user.registrDate}</th>
-                <th>{user.roles.join('')}</th>
+                {/* <th>{user.roles.join('')}</th> */}
               </tr>
             ))}
           </tbody>

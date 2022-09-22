@@ -75,28 +75,23 @@ class authController {
     }
   }
   async update(req, res) {
-    try {
-      // const { username } = req.body;
-      // const user = await User.findOne(() => User.username === username);
-      // if (user) {
-      //   User.email = req.body.email;
-      // }
-      // res.send();
-      const { username, email } = req.body;
-      const user = await User.findOne({ username });
-      // var artist = User.find(function (artist) {
-      //   return User._id === Number(req.params._id);
-      // });
-      // res.json(user);
-      user.email = req.body.email;
-      // res.send();
-      // return res.json({ user, message: 'Попытка обновить' });
-      await res.send(user);
-      // artist.name = req.body.name;
-      // res.send(artist);
-    } catch (e) {
-      console.log(e);
-    }
+    // try {
+    // const { username } = req.body;
+    // const user = await User.findOne({ username });
+    // user.email = req.body.email;
+    // res.send();
+    let id = req.params.id;
+    let body = req.body;
+    let user = await User.findOne({ id });
+    let updatedUser = { _id: id, ...body };
+    user = updatedUser;
+    res.send(user);
+  }
+  async deleteUser(req, res) {
+    let id = +req.params.id;
+    let index = User.findIndex((user) => user._id === id);
+    let deleteUser = User.splice(index, 1);
+    res.send(index);
   }
 }
 

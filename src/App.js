@@ -14,8 +14,8 @@ function App() {
 
   return (
     <>
-      <MainPage />
-      {/* {auth ? <MainPage /> : <Login authStatus={auth} onChangeAuth={handleToggleAuth} />} */}
+      {/* <MainPage /> */}
+      {auth ? <MainPage /> : <Login authStatus={auth} onChangeAuth={handleToggleAuth} />}
     </>
   );
 }
