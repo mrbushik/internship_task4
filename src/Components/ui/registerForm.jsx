@@ -5,11 +5,13 @@ import TextField from '../form/textFiled';
 
 const RegisterForm = ({ onChangeAuth }) => {
   const [data, setData] = useState({
+    _id: '',
     email: '',
     password: '',
     username: '',
     lastLoginDate: '',
     registrDate: '',
+    statusUser: 'USER',
   });
   const [check, setCheck] = React.useState(true);
   const [status, setStatus] = React.useState(false);
@@ -19,6 +21,13 @@ const RegisterForm = ({ onChangeAuth }) => {
       onChangeAuth(true);
     }
   }, [status]);
+  React.useEffect(() => {
+    setData((prevState) => ({ ...prevState, ['_id']: randomInteger(100000000, 999999999) }));
+  }, []);
+  function randomInteger(min, max) {
+    let rand = min - 0.5 + Math.random() * (max - min + 1);
+    return Math.round(rand);
+  }
 
   const handleChange = (target) => {
     const dateNow = Date().toString().substring(4, 24);
@@ -30,8 +39,7 @@ const RegisterForm = ({ onChangeAuth }) => {
     }));
   };
   const submitData = async () => {
-    await fetch('http://localhost:5000/auth/registration', {
-      // await fetch('https://jsonplaceholder.typicode.com/posts', {
+    await fetch('https://task4-2cc24-default-rtdb.europe-west1.firebasedatabase.app/users.json', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {

@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import TextField from '../form/textFiled';
-function LoginForm({ onChangeAuth }) {
+function LoginForm({ onChangeAuth, usersList }) {
   const [data, setData] = React.useState({
-    username: '',
+    email: '',
     password: '',
   });
   const [status, setStatus] = React.useState(false);
@@ -20,23 +20,14 @@ function LoginForm({ onChangeAuth }) {
     }));
   };
   const submitData = async () => {
-    await fetch('http://localhost:5000/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })
-      .then(function (response) {
-        setStatus(response.ok);
-        return response;
-      })
-      .then((response) => response.json())
-      .then((json) =>
-        json.token
-          ? localStorage.setItem('token', `${json.token}`) && console.log(json.token)
-          : console.log('uncorrect'),
-      );
+    let receivedUsers = Object.values(usersList).map((item) => item);
+    let correctEmail = receivedUsers.find((item) => item.email === data.email);
+    let correctPassword = receivedUsers.find((item) => item.password === data.password);
+    if (correctEmail && correctPassword) {
+      onChangeAuth(true);
+    } else {
+      setCheck(false);
+    }
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,12 +37,11 @@ function LoginForm({ onChangeAuth }) {
     } else {
       setCheck(true);
       submitData();
-      console.log(data);
     }
   };
   return (
     <form onSubmit={handleSubmit}>
-      <TextField label="Имя" name="username" value={data.name} onChange={handleChange} />
+      <TextField label="email" name="email" value={data.email} onChange={handleChange} />
       <TextField
         label="Пароль"
         type="password"
@@ -63,7 +53,7 @@ function LoginForm({ onChangeAuth }) {
       <button className="btn btn-primary w-100 mx-auto" type="submit">
         Submit
       </button>
-      {check ? '' : <p className="text-danger">все поля обязательны для заполнения</p>}
+      {check ? '' : <p className="text-danger">произошла ошибка заполните данные правильно</p>}
     </form>
   );
 }

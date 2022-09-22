@@ -5,6 +5,12 @@ import LoginForm from '../ui/loginForm';
 import RegisterForm from '../ui/registerForm';
 
 function Login({ ...rest }) {
+  const [userslist, setUsersList] = React.useState();
+  React.useEffect(() => {
+    fetch('https://task4-2cc24-default-rtdb.europe-west1.firebasedatabase.app/users.json')
+      .then((response) => response.json())
+      .then((json) => setUsersList(json));
+  }, []);
   const { type } = useParams();
   const [formType, setFormType] = React.useState(type === 'register' ? type : 'login');
   const togleFormType = () => {
@@ -28,7 +34,7 @@ function Login({ ...rest }) {
             ) : (
               <>
                 <h3 className="mb-4">Login</h3>
-                <LoginForm {...rest} />
+                <LoginForm {...rest} usersList={userslist} />
                 <a role="button" onClick={togleFormType}>
                   Sing Un
                 </a>
