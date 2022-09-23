@@ -4,18 +4,22 @@ import MainPage from './Components/page/mainPage';
 
 function App() {
   const [auth, setAuth] = React.useState(false);
-  const [test, setTest] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState('default');
   const handleToggleAuth = (state) => {
     setAuth(state);
   };
-  // React.useEffect(() => {
-  //   console.log('произошел auth');
-  // }, [auth]);
+  const handleChange = (state) => {
+    setUserEmail(state);
+  };
 
   return (
     <>
       {/* <MainPage /> */}
-      {auth ? <MainPage /> : <Login authStatus={auth} onChangeAuth={handleToggleAuth} />}
+      {auth ? (
+        <MainPage userEmailValue={userEmail} onChangeAuth={handleToggleAuth} />
+      ) : (
+        <Login onEmail={handleChange} authStatus={auth} onChangeAuth={handleToggleAuth} />
+      )}
     </>
   );
 }

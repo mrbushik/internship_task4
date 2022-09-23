@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import TextField from '../form/textFiled';
-function LoginForm({ onChangeAuth, usersList }) {
+function LoginForm({ onChangeAuth, usersList, onEmail }) {
   const [data, setData] = React.useState({
     email: '',
     password: '',
@@ -51,12 +51,12 @@ function LoginForm({ onChangeAuth, usersList }) {
       )
         .then((response) => response.text())
         .then((result) => onChangeAuth(true))
+        .then((result) => onEmail(data.email))
         .catch((error) => console.log('error', error));
     } else {
       return;
     }
   };
-  // const auth = () => onChangeAuth(true)
   const submitData = async () => {
     let receivedUsers = Object.values(usersList).map((item) => item);
     let correctEmail = receivedUsers.find((item) => item.email === data.email);

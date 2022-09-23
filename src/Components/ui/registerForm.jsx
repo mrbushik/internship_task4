@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import TextField from '../form/textFiled';
 
-const RegisterForm = ({ onChangeAuth }) => {
+const RegisterForm = ({ onChangeAuth, usersList, onEmail }) => {
   const [data, setData] = useState({
     _id: '',
     email: '',
@@ -13,14 +13,11 @@ const RegisterForm = ({ onChangeAuth }) => {
     registrDate: '',
     statusUser: 'USER',
   });
-  const [check, setCheck] = React.useState(true);
-  const [status, setStatus] = React.useState(false);
+  const [check, setCheck] = React.useState({
+    status: true,
+    massage: '',
+  });
 
-  React.useEffect(() => {
-    if (status) {
-      onChangeAuth(true);
-    }
-  }, [status]);
   React.useEffect(() => {
     setData((prevState) => ({ ...prevState, ['_id']: randomInteger(100000000, 999999999) }));
   }, []);
@@ -46,23 +43,26 @@ const RegisterForm = ({ onChangeAuth }) => {
         'Content-type': 'application/json; charset=UTF-8',
       },
     })
-      .then(function (response) {
-        console.log(response.ok);
-        setStatus(response.ok);
-        return response;
-      })
-      // не забыть поменять емаил на  токен
       .then((response) => response.json())
-      .then((json) => localStorage.setItem('token', `${json.email}`));
+      .then((json) => onEmail(data.email))
+      .then((json) => onChangeAuth(true));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (data.email === '' || data.password === '' || data.username === '') {
-      setCheck(false);
+    let receivedUsers = Object.values(usersList).map((item) => item);
+    let checkEmail = receivedUsers.find((item) => item.email === data.email);
+    if (checkEmail) {
+      setCheck((pervState) => ({ status: false, massage: 'такой емаил уже существует' }));
+
+      return;
+    }
+    if (data.email.trim() === '' || data.password.trim() === '' || data.username.trim() === '') {
+      setCheck((pervState) => ({ status: false, massage: 'все поля обязательны для заполнения' }));
       return;
     } else {
-      setCheck(true);
+      setCheck((pervState) => ({ ...pervState, status: true }));
+
       submitData();
     }
   };
@@ -88,7 +88,7 @@ const RegisterForm = ({ onChangeAuth }) => {
       <button className="btn btn-primary w-100 mx-auto" type="submit">
         Submit
       </button>
-      {check ? '' : <p className="text-danger">все поля обязательны для заполнения</p>}
+      {check.status ? '' : <p className="text-danger">{check.massage}</p>}
     </form>
   );
 };

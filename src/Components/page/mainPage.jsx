@@ -1,12 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import axios from 'axios';
 import UsersList from '../ui/usersList';
 
-function MainPage() {
+function MainPage({ onChangeAuth, userEmailValue }) {
+  const pervUsersList = React.useRef('');
   const [userslist, setUsersList] = React.useState();
   React.useEffect(() => {
+    pervUsersList.current = userslist;
     handleRequest();
   }, []);
+
+  React.useEffect(() => {
+    setInterval(() => {
+      handleRequest();
+    }, 5000);
+  }, []);
+
   const handleUpdateUsers = () => {
     handleRequest();
   };
@@ -16,7 +25,18 @@ function MainPage() {
       .then((json) => setUsersList(json));
   };
 
-  return <>{userslist && <UsersList listOfUsers={userslist} onUpdate={handleUpdateUsers} />}</>;
+  return (
+    <>
+      {userslist && (
+        <UsersList
+          userEmailValue={userEmailValue}
+          onChangeAuth={onChangeAuth}
+          listOfUsers={userslist}
+          onUpdate={handleUpdateUsers}
+        />
+      )}
+    </>
+  );
 }
 
 export default MainPage;

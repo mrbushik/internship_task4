@@ -18,14 +18,13 @@ function Login({ ...rest }) {
   };
   return (
     <>
-      {/* <div onClick={() => onChangeAuth(true)}>change state!!!</div> */}
       <div className="container mt-5">
         <div className="row">
           <div className="col-md-6 offset-md-3 shadow p-4">
             {formType === 'register' ? (
               <>
                 <h3 className="mb-4">Register</h3>
-                <RegisterForm {...rest} />
+                <RegisterForm {...rest} usersList={userslist} />
                 <p>Already have account?</p>{' '}
                 <a role="button" onClick={togleFormType}>
                   Sing In

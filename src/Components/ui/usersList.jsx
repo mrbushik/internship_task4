@@ -1,9 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-useless-computed-key */
 import React from 'react';
 import User from './user';
 
-function UsersList({ listOfUsers, onUpdate }) {
+function UsersList({ listOfUsers, onUpdate, onChangeAuth, userEmailValue }) {
+  React.useEffect(() => {
+    let receivedUsers = Object.values(listOfUsers).map((item) => item);
+    let existenceEmail = receivedUsers.find((item) => item.email === userEmailValue);
+    if (!existenceEmail) {
+      onChangeAuth(false);
+      return;
+    }
+    let existenceStatus = Object.values(existenceEmail).find((item) => item === 'BLOCK');
+
+    if (!(existenceEmail && !existenceStatus)) {
+      onChangeAuth(false);
+    }
+  }, [listOfUsers]);
   const [selectedUsers, setSelectedUsers] = React.useState([]);
+  const [highightCheckbox, setHighightCheckbox] = React.useState(false);
   const getSelectUsers = (id, checkboxNumber, check) => {
     let selectetIdArray = selectedUsers;
     if (!check) {
@@ -50,6 +65,13 @@ function UsersList({ listOfUsers, onUpdate }) {
   };
   const handleDelete = () => {
     selectedUsers.map((item) => updateData(item, 'DELETE', ''));
+    handleDeleteSelectedUsers();
+  };
+  const handleDeleteSelectedUsers = () => {
+    setSelectedUsers([]);
+  };
+  const handleCheckbox = (condition) => {
+    setHighightCheckbox(condition);
   };
   return (
     <>
@@ -62,6 +84,15 @@ function UsersList({ listOfUsers, onUpdate }) {
       <button type="button" className="btn btn-warning m-2" onClick={handleBlock}>
         block
       </button>
+      <div className="btn btn-primary m-2" onClick={() => handleCheckbox(true)}>
+        выделить всех
+      </div>
+      <div className="btn btn-secondary" onClick={() => handleCheckbox(false)}>
+        отменить выделение
+      </div>
+      <div className="text-primary">
+        Email авторизованного пользователя: {userEmailValue && userEmailValue}
+      </div>
       <table className="table">
         <thead>
           <tr>
@@ -78,11 +109,13 @@ function UsersList({ listOfUsers, onUpdate }) {
           <tbody>
             {Object.values(listOfUsers).map((user, index) => (
               <User
-                key={user._id}
+                key={index + Object.keys(listOfUsers)[index]}
                 {...user}
                 userObjectId={Object.keys(listOfUsers)[index]}
                 onSelect={getSelectUsers}
                 sequenceNumber={index}
+                onCheckbox={highightCheckbox}
+                deleteSelectedUsers={handleDeleteSelectedUsers}
               />
             ))}
           </tbody>
